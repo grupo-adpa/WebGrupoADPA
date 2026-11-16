@@ -15,7 +15,8 @@ Copia para este repo. La fuente de verdad es `AGENTS.md` en `grupo-adpa/gadpa-pl
 - No versionar `.env`, `node_modules`, `.next`, `bin/`, `obj/`, ni archivos de negocio.
 
 ## Código
-- Stack: TypeScript, Next.js (versión actual soportada), PostgreSQL como único motor, Tailwind. Sin SQLite, MySQL ni MongoDB. Sin CDN en producción (Tailwind compilado).
+- Plataforma (gadpa-platform): TypeScript, Next.js (versión actual soportada), PostgreSQL como único motor, Tailwind. Sin SQLite, MySQL ni MongoDB. Sin CDN en producción (Tailwind compilado).
+- Sitios públicos estáticos (WebGrupoADPA, WebCorreduria y WebYatta): sin backend ni base de datos, con TypeScript y Tailwind compilado. El brief de cada sitio fija su generador (Vite en WebGrupoADPA y WebCorreduria). Es una excepción a la línea de Next.js, aprobada por el responsable el 16/11/2026.
 - SQL siempre parametrizado (`$1`). Prohibido concatenar o interpolar datos del usuario.
 - Toda ruta `/api/*` valida sesión y permiso en el servidor. Denegar por defecto.
 - Contraseñas con argon2id o bcrypt. Sesiones: cookie `httpOnly`, `secure`, `sameSite`. No escribas criptografía propia.

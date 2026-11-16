@@ -59,6 +59,20 @@ open?.addEventListener("click", () => {
 document
   .querySelector("#close-menu")
   ?.addEventListener("click", () => dialog?.close());
+// Mantener Tab y Shift+Tab dentro del menú, incluido el salto al navegador.
+dialog?.addEventListener("keydown", (event) => {
+  if (event.key !== "Tab") return;
+  const items = dialog.querySelectorAll<HTMLElement>('button, a[href]');
+  const first = items[0];
+  const last = items[items.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last?.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first?.focus();
+  }
+});
 dialog?.addEventListener("close", () => {
   open?.setAttribute("aria-expanded", "false");
 });

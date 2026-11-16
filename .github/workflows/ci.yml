@@ -56,3 +56,4 @@ jobs:
             test-results/
             .lighthouseci/
           retention-days: 14
+          include-hidden-files: true

@@ -1,0 +1,12 @@
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    networks:
+      - proxy
+    # Sin puertos publicados. HTTPS/HSTS se configuran en el proxy.
+networks:
+  proxy:
+    external: true
+    # [PENDIENTE]: confirmar con el responsable la red exclusiva del proxy.
+    name: ${PROXY_NETWORK:?PENDIENTE configurar la red exclusiva del proxy}

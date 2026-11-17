@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -40,14 +40,17 @@ jobs:
           "$RUNNER_TEMP/gitleaks" git --redact --no-banner
       - name: Validar Nginx y respuesta 404
         run: |
-          docker build -t web-adpa:ci .
-          docker run --rm web-adpa:ci nginx -t
-          docker run -d --name web-adpa-test -p 127.0.0.1:8080:80 web-adpa:ci
-          trap 'docker stop web-adpa-test' EXIT
+          export PROXY_NETWORK="adpa-ci-${GITHUB_RUN_ID}"
+          docker network create "$PROXY_NETWORK"
+          trap 'docker compose -f docker-compose.yml -f docker-compose.ci.yml down; docker network rm "$PROXY_NETWORK"' EXIT
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build
+          docker compose exec -T web nginx -t
           curl --retry 10 --retry-all-errors --retry-delay 1 --retry-max-time 30 --max-time 5 --fail http://127.0.0.1:8080/ -o /dev/null
           test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/no-existe)" = 404
           curl -sI http://127.0.0.1:8080/ | grep -i "content-security-policy: default-src 'none'"
-      - uses: actions/upload-artifact@v4
+          docker inspect "$(docker compose ps -q web)" > /tmp/container.json
+          node scripts/check-container.mjs /tmp/container.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: revision-sitio

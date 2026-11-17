@@ -1,10 +1,10 @@
-# WebGrupoADPA — PR 1 de 2
+# WebGrupoADPA — rediseño v2 (PR 3)
 
-Sitio estático preliminar de Grupo ADPA: Vite, TypeScript y Tailwind compilado. La fuente de requisitos es `gadpa-platform/main` (`AGENTS.md`, `docs/brief-chatgpt-sitio-grupoadpa.md`, `docs/design.md` y la referencia visual), revisada el 16/11/2026. Este repositorio no modifica la plataforma.
+Sitio estático con Vite 8.3.8, TypeScript y Tailwind compilado. `gadpa-platform/docs/design.md` v2 es la fuente visual. El rediseño conserva CSP estricta, check-dist, build multipágina y las comprobaciones técnicas del PR #2.
 
-## Desarrollo y comprobaciones
+## Desarrollo y validación
 
-Requiere Node 26.13.1 o posterior (`.nvmrc`).
+Node ≥26.13.1 (`.nvmrc`), versiones directas fijadas y lockfile versionado:
 
 ```sh
 npm ci
@@ -18,56 +18,38 @@ npm run lighthouse
 gitleaks git --redact --no-banner
 ```
 
-`dev` y `preview` escuchan exclusivamente en 127.0.0.1. Playwright levanta la salida estática con los mismos encabezados CSP de Nginx, revisa accesibilidad con axe, teclado, menú modal, contacto sin JavaScript, ausencia de formulario, 404 y desbordamiento a 360/768/1280 px. Las capturas quedan en `test-results/`. Lighthouse ejecuta tres mediciones móviles y exige ≥90 en las cuatro categorías; se puede indicar `CHROME_PATH` si Chrome no está instalado en una ruta habitual. CI publica sus reportes como artefactos.
+`dev`/`preview` solo escuchan en 127.0.0.1. El servidor de Playwright sirve `dist` con la CSP de Nginx. Pruebas: navegación y foco del menú, axe, contacto sin JavaScript, contenido v2, imágenes válidas, 404, ausencia de formulario y desbordamiento a 360/768/1280 px. CI conserva capturas y reportes durante 14 días. Lighthouse mide tres veces y exige ≥90 en las cuatro categorías. En macOS el sandbox puede impedir abrir Chromium: el CI ejecuta las pruebas en Linux.
 
-## Alcance de esta entrega
+## Diseño y contenido pendiente
 
-- Portada, construcción/remodelación, soporte técnico, divisiones, software y contacto.
-- WhatsApp general confirmado por la presentación: +504 3303-9319; correo: info@grupoadpa.com.
-- Navegación mediante anclas y menú móvil nativo `<dialog>`; fuentes locales, PNG optimizado y formas SVG propias de menos de 6 KB.
-- Aviso de privacidad, términos provisionales y 404; metadatos sociales, sitemap y robots. Páginas legales provisionales con `noindex`.
-- Sin rastreadores, cookies de seguimiento ni almacenamiento de datos personales.
-- `FORMULARIO_ACTIVO: false` en `src/config.ts`; PR 1 no incluye implementación del formulario ni envía solicitudes a `/api/leads`.
+Manrope 700/800 e Inter se alojan localmente desde Fontsource. La maquetación usa clases Tailwind compiladas; los tokens, fuentes y utilidades para rayado/velo se definen en `src/style.css`. La navegación y el pie se comparten en `src/partials`, incluidos en HTML durante el build. Contactos y versiones legales salen de `src/config.ts`. `rightsEmail` es `info@grupoadpa.com`.
 
-El **PR 2** implementará el formulario con bandera de build, contratos de leads, consentimiento, simulador exclusivo de desarrollo y pruebas de respuestas/errores/reintentos. Cambiar ahora `FORMULARIO_ACTIVO` no activa un formulario. `TERMINOS_ACTIVOS` queda en false y no debe activarse hasta completar el texto y su integración en PR 2.
+Los logos provisionales positivo/negativo provienen de `gadpa-platform/docs/marca/grupoadpa/`; se convierten a WebP lossless para 1x/2x sin recolorear. Barra y pie usan el negativo; favicon e iconos provienen del monograma oficial provisional. Los vectores finales continúan pendientes. No se reutilizan el monograma de Yatta ni el PNG/favicon de la entrega anterior.
 
-## Identidad y configuración
+Este PR es un **borrador visual para revisión, no publicable**: incluye las posiciones de cifras y proyectos con marcadores, siguiendo la petición del responsable. Antes de publicar, confirmar contenido o retirar esas secciones y sus enlaces. No se han autorizado fotos, cifras, proyectos ni textos legales. No se utilizan fotos de banco.
 
-`src/config.ts` centraliza contactos, mensajes y versiones legales. Vite inyecta los contactos en HTML para que funcionen sin JavaScript. No se inventaron mensajes prefijados ni números de divisiones: esos CTA llevan al contacto general, con el pendiente visible.
+Pendientes visibles:
 
-El PNG positivo suministrado por el responsable se redujo sin redibujar ni recolorear, conserva transparencia y se usa solo sobre superficies claras. El favicon provisional es el logo completo reducido; no se inventó el monograma. El Open Graph es una composición del mismo PNG sobre lienzo claro. El monograma de Yatta proviene de `gadpa-platform/docs/marca/yatta/yatta-monograma.svg`. No se usan fotos ni logos de terceros sin autorización.
+- `[FOTO PENDIENTE]`: obra del héroe, obra civil, electricidad, aire acondicionado, instalación de cámaras/red y tres proyectos.
+- `[CIFRA PENDIENTE]`: años, proyectos y ciudades.
+- `[TEXTO PENDIENTE]`: nombre/tipo/ciudad de cada proyecto, detalles de los pasos 2–4, Facturación Otis, Adpabill360, aviso de privacidad y términos.
+- `[PENDIENTE]`: versiones legales y red exclusiva del proxy.
+- `[LOGO PENDIENTE]`: vectores definitivos (documentado; los provisionales ya están integrados).
+- `[LISTA PENDIENTE]`: marcas autorizadas; no se muestra la tira de logos.
+- `[URL PENDIENTE]`: Correduría Deras; no se publica como división ni se incluye enlace.
 
-Se fijan todas las dependencias directas, incluido Vite 8.3.8, TypeScript 6.0.3, ESLint 10.14.0 y typescript-eslint 8.72.2. Los overrides fijan minimatch 11.0.8 y basic-ftp 6.2.6 para corregir los avisos de seguridad de dependencias indirectas sin cambiar las versiones solicitadas. Mantenerlos bajo revisión al actualizar las herramientas. Las fuentes Inter y Hedvig Letters Serif conservan su licencia OFL dentro de sus paquetes; Lucide es ISC.
+ShipX y Yatta están en pausa: solo enlaces discretos al contacto general. No hay redes sociales. Términos permanecen sin enlazar mientras `TERMINOS_ACTIVOS=false`; las maquetas no cambian esa regla del brief. No se incorporó el documento de textos propuestos porque sus partes requieren aprobación explícita.
 
-## Despliegue previsto, sin publicar en este PR
+## Seguridad del contenedor y CI
 
-```sh
-docker build -t web-grupoadpa .
-# Configurar PROXY_NETWORK solo cuando el responsable confirme la red.
-docker compose config
-docker compose up -d
-```
+Ver [evidencia de SHA, digests e identidad](docs/verificacion-dependencias.md). Dockerfile fija Node y Nginx por tag y digest. El runtime usa usuario `nginx` sin capacidades, escucha internamente en 8080 y funciona con raíz de solo lectura. Los únicos directorios temporales de escritura son `/var/cache/nginx` y `/var/run` en tmpfs.
 
-Nginx 1.30.2-alpine fijado también por digest, CSP sin `unsafe-inline`, encabezados en respuestas normales y errores, caché anual exclusiva de assets con hash. No hay puertos publicados en Compose y la única red es la del proxy. `PROXY_NETWORK` sin configurar provoca un error explícito: su valor sigue **[PENDIENTE]**. No usar `evolution_default` ni redes con bases de datos. HTTPS, HSTS y el reenvío futuro de `/api/*` son responsabilidad del proxy. No se ha accedido a QA ni producción.
+Compose no publica puertos. `PROXY_NETWORK` debe identificar exclusivamente la red del proxy; sigue `[PENDIENTE]` y la ausencia de valor falla explícitamente. Nunca usar `evolution_default` ni redes con bases de datos. HTTPS, HSTS y el eventual reenvío de `/api/*` corresponden al proxy. `docker-compose.ci.yml` añade un puerto de loopback solo para el runner. CI prueba el Compose real con las restricciones activas y una red efímera; no toca QA/producción.
 
-## Pendientes para revisión/publicación
+## Si npm audit falla por un aviso ajeno al cambio
 
-| Marcador                                        | Ubicación / tratamiento                                                  |
-| ----------------------------------------------- | ------------------------------------------------------------------------ |
-| `[LOGO PENDIENTE: ShipX]`                       | Tarjeta ShipX, visible                                                   |
-| `[LOGO PENDIENTE: ADPA negativo y monograma g]` | Sin versión negativa sobre oscuro; favicon provisional con logo completo |
-| `[TEXTO PENDIENTE: presentación de Yatta]`      | Tarjeta Yatta                                                            |
-| `[TEXTO PENDIENTE: Facturación Otis]`           | Software                                                                 |
-| `[TEXTO PENDIENTE: Adpabill360]`                | Software                                                                 |
-| `[TEXTO PENDIENTE: aviso de privacidad]`        | Privacidad; versión y vigencia pendientes                                |
-| `[TEXTO PENDIENTE: términos de uso]`            | Página creada, enlace desactivado                                        |
-| `[CORREO PENDIENTE]`                            | Canal de derechos en pie y privacidad; no se inventa un mailto           |
-| `[PENDIENTE: WhatsApp de ShipX / Yatta]`        | Divisiones; acceso al contacto general mientras se confirman             |
-| `[PENDIENTE: mensajes de WhatsApp por sección]` | Configuración vacía; enlace directo sin mensaje inventado                |
-| `[PENDIENTE: redes sociales]`                   | Pie                                                                      |
-| `[LISTA PENDIENTE: marcas autorizadas]`         | Tira omitida por completo mientras no exista autorización                |
-| `[URL PENDIENTE: Correduría Deras]`             | No se publica el enlace ni se presenta como división                     |
-| `[PENDIENTE: red exclusiva del proxy]`          | Compose / variable PROXY_NETWORK                                         |
-| `[PENDIENTE: aprobación visual]`                | Formas orgánicas, lienzo y bruma según design.md                         |
+No desactivar el chequeo, ignorar el aviso ni ejecutar `npm audit fix --force` para poner el PR en verde. Guardar el advisory y la cadena afectada con `npm audit --json` / `npm explain <paquete>`; comprobar si existe también con el lockfile de main en un checkout separado. Documentar versión afectada, alcance (build o runtime), corrección disponible y el resultado de la comparación. Aplicar una actualización u override mínimo y probado si respeta las versiones acordadas; si exige cambiar ese acuerdo, dejar el bloqueo documentado y pedir decisión al responsable. Un fallo preexistente no se presenta como validación aprobada. Los overrides actuales de minimatch y basic-ftp corrigen dependencias indirectas y deben revisarse cuando se actualicen las herramientas.
 
-Los textos legales deben ser entregados y revisados por el responsable y su abogado antes de publicación. La revisión de cada PR por Claude Code (`revisor-sitios`) queda a cargo del flujo del responsable.
+## Entregas siguientes
+
+PR 4: `/invue`, separado y con bandera apagada por defecto, solo después de abrir el PR 3 y dejarlo en verde. PR 5: formulario y contratos de leads. `FORMULARIO_ACTIVO=false` continúa sin implementación; no se modifica en este rediseño. No se despliega desde estos PR.

@@ -9,13 +9,13 @@ producción. Las capturas son evidencia de la variante de prueba activada.
 
 ## Fotos (siete marcadores)
 
-- Héroe: `[FOTO PENDIENTE: exhibidor de celulares con OnePOD, del kit de prensa de InVue]`.
+- Héroe: `[FOTO PENDIENTE: exhibidor de celulares con OnePOD™, del kit de prensa de InVue]`.
 - Celulares/tabletas: `[FOTO PENDIENTE: OnePOD]`.
 - Tabletas/laptops: `[FOTO PENDIENTE: Series 2865 y Laptop Lock]`.
 - Accesorios: `[FOTO PENDIENTE: Línea Zips]`.
 - Carga: `[FOTO PENDIENTE: MagStand]`.
 - Vitrinas: `[FOTO PENDIENTE: Cerraduras inteligentes L440 y L410]`.
-- Llave: `[FOTO PENDIENTE: OneKEY y Access Manager]`.
+- Llave: `[FOTO PENDIENTE: OneKEY™ y Access Manager™]`.
 
 No se han usado imágenes de capturas, PDF, bancos de fotos o invue.com.
 InVue aparece solo como texto, sin logo. No se añadieron logos de terceros.

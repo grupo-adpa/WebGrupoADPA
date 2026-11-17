@@ -3,8 +3,15 @@ export const site = {
   url: "https://www.grupoadpa.com",
   email: "info@grupoadpa.com",
   whatsapp: { general: "50433039319", shipx: "", yatta: "" },
-  // Sin mensaje prefijado hasta la confirmación del responsable.
-  messages: { general: "", shipx: "", yatta: "" },
+  // El mensaje de InVue está aprobado en contenido-pagina-invue.md.
+  messages: {
+    general: "",
+    shipx: "",
+    yatta: "",
+    invue: "Hola, quiero información sobre las soluciones InVue para mi tienda",
+  },
+  emailSubjects: { invue: "Soluciones InVue" },
+  INVUE_ACTIVA: false,
   rightsEmail: "info@grupoadpa.com",
   legal: { privacyVersion: "[PENDIENTE]", termsVersion: "[PENDIENTE]" },
   FORMULARIO_ACTIVO: false,
@@ -12,9 +19,14 @@ export const site = {
 } as const;
 export function whatsappUrl(
   channel: keyof typeof site.whatsapp,
+  messageKey: keyof typeof site.messages = channel,
 ): string | null {
   const phone = site.whatsapp[channel];
   if (!phone) return null;
-  const message = site.messages[channel];
+  const message = site.messages[messageKey];
   return `https://wa.me/${phone}${message ? `?text=${encodeURIComponent(message)}` : ""}`;
+}
+
+export function emailUrl(subject?: keyof typeof site.emailSubjects): string {
+  return `mailto:${site.email}${subject ? `?subject=${encodeURIComponent(site.emailSubjects[subject])}` : ""}`;
 }

@@ -25,9 +25,12 @@ const headers = {
 };
 createServer(async (req, res) => {
   try {
+    const pathname = decodeURIComponent(
+      new URL(req.url, "http://localhost").pathname,
+    );
     const path = resolve(
       root,
-      "." + decodeURIComponent(new URL(req.url, "http://localhost").pathname),
+      "." + (pathname === "/invue" ? "/invue.html" : pathname),
     );
     if (path !== root && !path.startsWith(root + "/")) {
       res.writeHead(403, headers).end();

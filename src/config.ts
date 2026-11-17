@@ -5,7 +5,7 @@ export const site = {
   whatsapp: { general: "50433039319", shipx: "", yatta: "" },
   // Sin mensaje prefijado hasta la confirmación del responsable.
   messages: { general: "", shipx: "", yatta: "" },
-  rightsEmail: "",
+  rightsEmail: "info@grupoadpa.com",
   legal: { privacyVersion: "[PENDIENTE]", termsVersion: "[PENDIENTE]" },
   FORMULARIO_ACTIVO: false,
   TERMINOS_ACTIVOS: false,

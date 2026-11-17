@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
 import { site, whatsappUrl } from "./src/config.ts";
@@ -7,10 +8,17 @@ export default defineConfig({
     {
       name: "site-config",
       transformIndexHtml(html) {
+        html = html
+          .replace("__NAV__", readFileSync("src/partials/nav.html", "utf8"))
+          .replace(
+            "__FOOTER__",
+            readFileSync("src/partials/footer.html", "utf8"),
+          );
         const values: Record<string, string> = {
           WA_GENERAL: whatsappUrl("general")!,
           SITE_URL: site.url,
           EMAIL: site.email,
+          RIGHTS_EMAIL: site.rightsEmail,
           PRIVACY_VERSION: site.legal.privacyVersion,
           TERMS_VERSION: site.legal.termsVersion,
           YEAR: String(new Date().getFullYear()),

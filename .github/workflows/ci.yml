@@ -6,9 +6,15 @@ on:
 permissions:
   contents: read
 jobs:
-  validation:
+  variants:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        invue: ["false", "true"]
+    env:
+      INVUE_ACTIVA: ${{ matrix.invue }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -22,7 +28,11 @@ jobs:
       - run: npm run typecheck
       - run: npm run test:policy
       - run: npm run test:publication
+      - name: Transición de bandera y valor predeterminado
+        if: matrix.invue == 'false'
+        run: npm run test:invue-build
       - run: npm run build
+      - run: node scripts/check-invue.mjs "$INVUE_ACTIVA"
       - run: npx playwright install --with-deps chromium
       - run: npm test
       - name: Lighthouse móvil
@@ -46,17 +56,22 @@ jobs:
           export PROXY_NETWORK="adpa-ci-${GITHUB_RUN_ID}"
           docker network create "$PROXY_NETWORK"
           trap 'docker compose down; docker network rm "$PROXY_NETWORK"' EXIT
-          docker compose up -d --build
+          docker compose build --build-arg INVUE_ACTIVA="$INVUE_ACTIVA"
+          docker compose up -d --no-build
           docker compose exec -T web nginx -t
           curl --retry 10 --retry-all-errors --retry-delay 1 --retry-max-time 30 --max-time 5 --fail http://127.0.0.1:8080/ -o /dev/null
           test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/no-existe)" = 404
           curl -sI http://127.0.0.1:8080/ | grep -i "content-security-policy: default-src 'none'"
+          expected=404
+          if [ "$INVUE_ACTIVA" = true ]; then expected=200; fi
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/invue)" = "$expected"
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/invue.html)" = "$expected"
           docker inspect "$(docker compose ps -q web)" > /tmp/container.json
           node scripts/check-container.mjs /tmp/container.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
-          name: revision-sitio
+          name: revision-sitio-${{ matrix.invue }}
           path: |
             playwright-report/
             test-results/
@@ -77,11 +92,11 @@ jobs:
       - run: npm run audit:dev
   quality:
     if: always()
-    needs: [validation, audit]
+    needs: [variants, audit]
     runs-on: ubuntu-latest
     steps:
       - name: Todos los controles deben pasar
         env:
-          VALIDATION_RESULT: ${{ needs.validation.result }}
+          VARIANTS_RESULT: ${{ needs.variants.result }}
           AUDIT_RESULT: ${{ needs.audit.result }}
-        run: test "$VALIDATION_RESULT" = success && test "$AUDIT_RESULT" = success
+        run: test "$VARIANTS_RESULT" = success && test "$AUDIT_RESULT" = success

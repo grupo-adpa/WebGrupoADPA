@@ -105,3 +105,42 @@ PUBLICAR=true esa exclusión desaparece. No se desactiva ninguna otra auditoría
 ## Entregas siguientes
 
 PR 4: `/invue`, separado y con bandera apagada por defecto, solo después de abrir el PR 3 y dejarlo en verde. PR 5: formulario y contratos de leads. `FORMULARIO_ACTIVO=false` continúa sin implementación; no se modifica en este rediseño. No se despliega desde estos PR.
+
+## PR 4: página InVue
+
+La fuente es `gadpa-platform/main/docs/contenido-pagina-invue.md` (16/11/2026).
+`invue.html` usa la barra, el pie y el sistema v2 del PR 3. El brief prevalece
+sobre las capturas: héroe con velo marino, audiencia sobre bruma y soluciones
+con dos columnas en tableta y tres en escritorio. No incorpora fotos ni logo
+de InVue; los únicos logos son los provisionales autorizados de Grupo ADPA.
+
+`site.INVUE_ACTIVA` es `false` por defecto. Para revisión local, la variable de
+build `INVUE_ACTIVA=true` incluye la página, la navegación «Para comercios», la
+tarjeta de soporte y el sitemap. No es una bandera que se cambie en el navegador
+ni una variable de runtime del contenedor. Se rechazan valores distintos de
+`true` o `false`. Cambiarla requiere reconstruir el sitio.
+
+```sh
+# Salida predeterminada: /invue y /invue.html responden 404.
+npm run build
+node scripts/check-invue.mjs false
+
+# Revisión de la página habilitada; no publica ni despliega.
+INVUE_ACTIVA=true npm run build
+INVUE_ACTIVA=true npm test
+INVUE_ACTIVA=true npm run lighthouse
+
+# Prueba true → false → sin variable sobre el mismo dist.
+npm run test:invue-build
+```
+
+CI prueba las dos variantes con Playwright/axe, Lighthouse y el Nginx real en
+Compose. El argumento Docker `INVUE_ACTIVA` también es `false` por defecto;
+CI lo pasa al construir la imagen y verifica HTTP 200/404 en ambas rutas.
+Los artefactos `revision-sitio-true` y `revision-sitio-false` incluyen los
+informes y las capturas a 360, 768 y 1280 px. No hay pasos de despliegue.
+
+El WhatsApp utiliza el número general y `messages.invue`; el correo utiliza
+`emailSubjects.invue`. Ambos enlaces funcionan también sin JavaScript.
+La página no debe publicarse hasta resolver [sus pendientes](docs/invue-pendientes.md).
+El formulario y cualquier cambio del contrato `leads` quedan fuera de este PR.

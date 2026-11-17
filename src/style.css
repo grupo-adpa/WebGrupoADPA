@@ -16,6 +16,8 @@
     format("woff2");
 }
 :root {
+  /* Reservado exclusivamente a los marcadores de foto. */
+  --adpa-marcador-foto: #1c3b53;
   --adpa-marino: #092239;
   --adpa-teal: #4197ac;
   --adpa-teal-texto: #236b7b;
@@ -108,7 +110,7 @@
   @apply focus-visible:outline-white;
 }
 @utility photo-placeholder {
-  background-color: #1c3b53;
+  background-color: var(--adpa-marcador-foto);
   background-image: repeating-linear-gradient(
     135deg,
     transparent 0,

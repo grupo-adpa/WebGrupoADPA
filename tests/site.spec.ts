@@ -143,3 +143,49 @@ test("contactos y contenido funcionan sin JavaScript y sin recursos externos", a
   expect(remote).toEqual([]);
   await context.close();
 });
+
+test("todas las páginas de revisión impiden indexación", async ({
+  page,
+  request,
+}) => {
+  for (const path of [
+    "/",
+    "/privacidad.html",
+    "/terminos.html",
+    "/no-existe",
+  ]) {
+    await page.goto(path);
+    await expect(page.locator('meta[name="robots"]')).toHaveCount(1);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      "noindex,nofollow",
+    );
+  }
+  expect(await (await request.get("/robots.txt")).text()).toBe(
+    "User-agent: *\nDisallow: /\n",
+  );
+});
+for (const width of [360, 768, 1280]) {
+  test(`mosaico sin celdas vacías a ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const filled = await page.locator("#construction-grid").evaluate((grid) => {
+      const cards = [...grid.children].map((el) => el.getBoundingClientRect());
+      const startsX = [...new Set(cards.map((r) => Math.round(r.left)))];
+      const startsY = [...new Set(cards.map((r) => Math.round(r.top)))];
+      return startsX.every((x) =>
+        startsY.every((y) =>
+          cards.some(
+            (r) =>
+              r.left <= x + 2 &&
+              r.right > x + 2 &&
+              r.top <= y + 2 &&
+              r.bottom > y + 2,
+          ),
+        ),
+      );
+    });
+    expect(filled).toBeTruthy();
+    await expect(page.locator("#proyectos h2")).toHaveText("Proyectos");
+  });
+}

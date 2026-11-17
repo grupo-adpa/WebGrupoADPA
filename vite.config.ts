@@ -2,12 +2,40 @@ import { readFileSync } from "node:fs";
 import { defineConfig } from "vite";
 import tailwindcss from "@tailwindcss/vite";
 import { site, whatsappUrl } from "./src/config.ts";
+import {
+  publicationFlag,
+  checkPublication,
+} from "./scripts/check-publication.mjs";
+const publicar = publicationFlag();
+let isBuild = false;
 export default defineConfig({
   plugins: [
     tailwindcss(),
     {
       name: "site-config",
+      configResolved(config) {
+        isBuild = config.command === "build";
+      },
+      generateBundle() {
+        this.emitFile({
+          type: "asset",
+          fileName: "robots.txt",
+          source: publicar
+            ? `User-agent: *\nAllow: /\nSitemap: ${site.url}/sitemap.xml\n`
+            : "User-agent: *\nDisallow: /\n",
+        });
+      },
+      async closeBundle() {
+        if (isBuild) await checkPublication("dist", publicar);
+      },
       transformIndexHtml(html) {
+        if (!publicar)
+          html = html
+            .replace(/<meta\b[^>]*\bname=["']robots["'][^>]*>/gi, "")
+            .replace(
+              "</head>",
+              '<meta name="robots" content="noindex,nofollow"></head>',
+            );
         html = html
           .replace("__NAV__", readFileSync("src/partials/nav.html", "utf8"))
           .replace(

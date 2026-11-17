@@ -32,7 +32,7 @@ Pendientes visibles:
 
 - `[FOTO PENDIENTE]`: obra del héroe, obra civil, electricidad, aire acondicionado, instalación de cámaras/red y tres proyectos.
 - `[CIFRA PENDIENTE]`: años, proyectos y ciudades.
-- `[TEXTO PENDIENTE]`: nombre/tipo/ciudad de cada proyecto, detalles de los pasos 2–4, Facturación Otis, Adpabill360, aviso de privacidad y términos.
+- `[TEXTO PENDIENTE]`: nombre/tipo/ciudad de cada proyecto, Facturación Otis, Adpabill360, aviso de privacidad y términos.
 - `[PENDIENTE]`: versiones legales y red exclusiva del proxy.
 - `[LOGO PENDIENTE]`: vectores definitivos (documentado; los provisionales ya están integrados).
 - `[LISTA PENDIENTE]`: marcas autorizadas; no se muestra la tira de logos.
@@ -46,9 +46,61 @@ Ver [evidencia de SHA, digests e identidad](docs/verificacion-dependencias.md). 
 
 Compose no publica puertos. `PROXY_NETWORK` debe identificar exclusivamente la red del proxy; sigue `[PENDIENTE]` y la ausencia de valor falla explícitamente. Nunca usar `evolution_default` ni redes con bases de datos. HTTPS, HSTS y el eventual reenvío de `/api/*` corresponden al proxy. `docker-compose.ci.yml` añade un puerto de loopback solo para el runner. CI prueba el Compose real con las restricciones activas y una red efímera; no toca QA/producción.
 
-## Si npm audit falla por un aviso ajeno al cambio
+## Política de npm audit
 
-No desactivar el chequeo, ignorar el aviso ni ejecutar `npm audit fix --force` para poner el PR en verde. Guardar el advisory y la cadena afectada con `npm audit --json` / `npm explain <paquete>`; comprobar si existe también con el lockfile de main en un checkout separado. Documentar versión afectada, alcance (build o runtime), corrección disponible y el resultado de la comparación. Aplicar una actualización u override mínimo y probado si respeta las versiones acordadas; si exige cambiar ese acuerdo, dejar el bloqueo documentado y pedir decisión al responsable. Un fallo preexistente no se presenta como validación aprobada. Los overrides actuales de minimatch y basic-ftp corrigen dependencias indirectas y deben revisarse cuando se actualicen las herramientas.
+Aprobada por el responsable el 17/11/2026. El job independiente `audit` ejecuta
+`npm audit --omit=dev --audit-level=moderate` como control bloqueante de las
+dependencias de producción y `npm run audit:dev` para el informe completo.
+`quality` depende de `audit` y de todas las validaciones: un fallo de audit no
+impide obtener lint, tipos, build, check-dist, Playwright/axe, Lighthouse,
+gitleaks ni las pruebas del contenedor, pero sí impide el verde global.
+
+`scripts/audit-dev.mjs` no añade dependencias. Ejecuta `npm audit --json` y
+resuelve los avisos raíz y sus dependientes transitivos. Cualquier aviso
+moderate, high o critical que no tenga una excepción exacta por ID GHSA y
+paquete hace fallar el CI. También fallan informes inválidos, errores de npm,
+cadenas irresolubles, datos de excepción incompletos y excepciones vencidas.
+
+`audit-exceptions.json` contiene únicamente GHSA-fc5q-39xc-vjpf para picomatch,
+con motivo y `vence: "2026-12-17"`. Solo afecta herramientas de build y no hay
+versión corregida publicada al aprobar esta excepción. No aplicar override ni
+rebajar Vite. Los overrides anteriores de minimatch/basic-ftp no cambian.
+La fecha vence al comenzar ese día en America/Tegucigalpa; incluso una excepción
+que ya no se use bloquea si venció, para obligar a revisarla o retirarla.
+
+Para agregar o renovar una excepción: registrar el ID, paquete, cadena,
+alcance, ausencia de corrección compatible y motivo; obtener **aprobación
+explícita del responsable**; actualizar el JSON y su fecha mediante PR; ejecutar
+`npm run test:policy`, los dos controles de audit y el CI completo. No añadir
+excepciones ni extender fechas automáticamente. Si aparece un aviso nuevo,
+comparar también contra main y documentar la corrección o decisión pendiente.
+Nunca usar `audit fix --force` ni cambiar el umbral para ocultar un fallo.
+
+## Control de publicación
+
+`PUBLICAR` es una bandera de build, `false` por defecto. Con `false` o sin
+variable, cada HTML (incluidos legales y 404) lleva un único
+`<meta name="robots" content="noindex,nofollow">` y robots.txt contiene
+`User-agent: *` / `Disallow: /`. No es control de acceso ni una autorización
+para desplegar.
+
+`PUBLICAR=true npm run build` habilita robots.txt y comprueba **todos** los
+archivos de dist, incluidos bundles y assets: cualquier `PENDIENTE` o
+`DATO A CONFIRMAR` hace fallar el build. El contenido actual debe fallar porque
+conserva marcadores solicitados. No se eliminan marcadores automáticamente.
+El Dockerfile recibe `PUBLICAR` como argumento de build, también falso por
+defecto; cambiar una variable del contenedor ya construido no cambia la salida.
+
+`npm run test:publication` comprueba el fallo publicable con marcadores, el
+rechazo de valores inválidos y la salida no indexable tanto explícita como por
+defecto, dejando dist en modo revisión. `npm run test:policy` comprueba también
+salidas limpias publicables y marcadores en assets. Playwright comprueba las
+metas y robots.txt del sitio servido. CI ejecuta estas pruebas.
+
+Lighthouse mantiene ≥90 en sus cuatro categorías. En modo revisión se excluye
+únicamente su auditoría `is-crawlable`, incompatible con el noindex obligatorio;
+la prohibición de indexar se verifica explícitamente por las pruebas. En modo
+PUBLICAR=true esa exclusión desaparece. No se desactiva ninguna otra auditoría.
 
 ## Entregas siguientes
 

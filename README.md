@@ -147,3 +147,33 @@ El WhatsApp utiliza el número general y `messages.invue`; el correo utiliza
 `emailSubjects.invue`. Ambos enlaces funcionan también sin JavaScript.
 La página no debe publicarse hasta resolver [sus pendientes](docs/invue-pendientes.md).
 El formulario y cualquier cambio del contrato `leads` quedan fuera de este PR.
+
+## Modo noche automático
+
+Implementa `docs/design.md` §2.1 de [gadpa-platform PR #45](https://github.com/grupo-adpa/gadpa-platform/pull/45),
+commit `54341868252614503a514e396987c63b245bb85e` (especificación aún en PR al implementarla).
+Los ocho tokens semánticos se declaran en `:root`; `prefers-color-scheme: dark`
+los redefine bajo `:root:not([data-theme="light"])`. No hay selector, script,
+almacenamiento ni dependencia nueva. La guarda permite conservar claro cuando
+el documento indique `data-theme="light"`; no se introduce ese atributo en el sitio.
+
+Las superficies y textos de portada, legales, 404 e InVue usan los tokens.
+Los colores de marca sobre teal y marino permanecen fijos; fotos, logos,
+rayado, velos y `#1c3b53` exclusivo de marcadores de foto se conservan.
+La CSP, `check-dist`, `PUBLICAR` e `INVUE_ACTIVA` mantienen sus controles.
+
+`tests/color-scheme.spec.ts` emula claro/noche a 360 y 1280 px y prueba todas las
+páginas disponibles en cada variante de InVue. Ejecuta axe en ambos modos,
+verifica el foco de 3 px y el contraste en hover, guarda capturas completas y
+un JSON de contraste por página. La medición adicional compone los fondos de
+los textos y exige 4.5:1, o 3:1 a partir de 24 px / 18.67 px en negrita.
+En fotos provisionales considera el fondo del marcador sin aclararlo con el
+rayado; el velo marino conserva su contraste. Las fotografías reales deberán
+revisarse al sustituir los marcadores. También prueba el cambio de preferencia
+en vivo, la guarda de claro, el menú móvil y el modo oscuro sin JavaScript.
+El CI existente incluye estas pruebas y sus artefactos `revision-sitio-*`.
+
+```sh
+INVUE_ACTIVA=true npm run build
+INVUE_ACTIVA=true npm test -- tests/color-scheme.spec.ts
+```

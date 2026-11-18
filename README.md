@@ -175,3 +175,21 @@ El CI existente incluye estas pruebas y sus artefactos `revision-sitio-*`.
 INVUE_ACTIVA=true npm run build
 INVUE_ACTIVA=true npm test -- tests/color-scheme.spec.ts
 ```
+
+## Fondo animado de firma
+
+Especificación en gadpa-platform main, commit `215e63c`, `docs/design.md` §7.1.
+Una única capa `canvas` fija dibuja puntos y líneas teal detrás del contenido,
+sin recursos externos, librerías, desplazamiento ligado al scroll ni cambios
+automáticos de patrón. Las tarjetas de construcción y soporte activan su acento
+solo durante hover o toque y vuelven al patrón base al salir.
+
+El dibujo se limita a 20 fps, usa 16 puntos en teléfono y 32 en pantallas más
+anchas, y se pausa al ocultar la pestaña. `prefers-reduced-motion: reduce` deja
+un cuadro estático y mantiene los cambios de acento sin animarlos. La medición
+de contraste incluye el píxel real del canvas bajo cada texto.
+
+```sh
+INVUE_ACTIVA=true npm run build
+INVUE_ACTIVA=true npm test -- tests/signature-background.spec.ts tests/color-scheme.spec.ts
+```

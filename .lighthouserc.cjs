@@ -1,7 +1,12 @@
 module.exports = {
   ci: {
     collect: {
-      url: ["http://127.0.0.1:4173/"],
+      url: [
+        "http://127.0.0.1:4173/",
+        ...(process.env.INVUE_ACTIVA === "true"
+          ? ["http://127.0.0.1:4173/invue"]
+          : []),
+      ],
       startServerCommand: "node scripts/serve-dist.mjs",
       startServerReadyPattern: "READY",
       numberOfRuns: 3,

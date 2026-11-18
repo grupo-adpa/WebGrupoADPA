@@ -1,5 +1,13 @@
 import "./style.css";
 import {
+  Smartphone,
+  Laptop,
+  Landmark,
+  Archive,
+  Gem,
+  Utensils,
+  MessageSquare,
+  Wrench,
   createIcons,
   House,
   Zap,
@@ -14,10 +22,18 @@ import {
   Menu,
   X,
 } from "lucide";
-import { site, whatsappUrl } from "./config";
+import { site, whatsappUrl, emailUrl } from "./config";
 
 createIcons({
   icons: {
+    Smartphone,
+    Laptop,
+    Landmark,
+    Archive,
+    Gem,
+    Utensils,
+    MessageSquare,
+    Wrench,
     House,
     Zap,
     Wind,
@@ -37,11 +53,16 @@ for (const link of document.querySelectorAll<HTMLAnchorElement>(
   "[data-whatsapp]",
 )) {
   const channel = link.dataset.whatsapp as keyof typeof site.whatsapp;
-  const url = whatsappUrl(channel);
+  const url = whatsappUrl(
+    channel,
+    link.dataset.message as keyof typeof site.messages | undefined,
+  );
   if (url) link.href = url;
 }
 for (const link of document.querySelectorAll<HTMLAnchorElement>("[data-email]"))
-  link.href = `mailto:${site.email}`;
+  link.href = emailUrl(
+    link.dataset.emailSubject as keyof typeof site.emailSubjects | undefined,
+  );
 for (const el of document.querySelectorAll("[data-year]"))
   el.textContent = String(new Date().getFullYear());
 for (const el of document.querySelectorAll("[data-privacy-version]"))

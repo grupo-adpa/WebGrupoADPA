@@ -148,29 +148,27 @@ El WhatsApp utiliza el número general y `messages.invue`; el correo utiliza
 La página no debe publicarse hasta resolver [sus pendientes](docs/invue-pendientes.md).
 El formulario y cualquier cambio del contrato `leads` quedan fuera de este PR.
 
-## Modo noche automático
+## Tema único oscuro
 
-Especificación en gadpa-platform main, commit `fbc01b8`,
-[PR #45 integrado](https://github.com/grupo-adpa/gadpa-platform/pull/45), `docs/design.md` §2.1.
-Los ocho tokens semánticos se declaran en `:root`; `prefers-color-scheme: dark`
-los redefine bajo `:root:not([data-theme="light"])`. No hay selector, script,
-almacenamiento ni dependencia nueva. La guarda permite conservar claro cuando
-el documento indique `data-theme="light"`; no se introduce ese atributo en el sitio.
+Especificación en gadpa-platform main, commit `215e63c`, `docs/design.md` §2.1.
+Los ocho tokens semánticos oscuros se declaran una sola vez en `:root`. No hay
+modo claro, seguimiento de `prefers-color-scheme`, guarda `data-theme`, selector,
+script, almacenamiento ni dependencia nueva.
 
 Las superficies y textos de portada, legales, 404 e InVue usan los tokens.
 Los colores de marca sobre teal y marino permanecen fijos; fotos, logos,
 rayado, velos y `#1c3b53` exclusivo de marcadores de foto se conservan.
 La CSP, `check-dist`, `PUBLICAR` e `INVUE_ACTIVA` mantienen sus controles.
 
-`tests/color-scheme.spec.ts` emula claro/noche a 360 y 1280 px y prueba todas las
-páginas disponibles en cada variante de InVue. Ejecuta axe en ambos modos,
+`tests/color-scheme.spec.ts` revisa el tema oscuro a 360 y 1280 px y prueba todas
+las páginas disponibles en cada variante de InVue. Ejecuta axe,
 verifica el foco de 3 px y el contraste en hover, guarda capturas completas y
 un JSON de contraste por página. La medición adicional compone los fondos de
 los textos y exige 4.5:1, o 3:1 a partir de 24 px / 18.67 px en negrita.
 En fotos provisionales considera el fondo del marcador sin aclararlo con el
 rayado; el velo marino conserva su contraste. Las fotografías reales deberán
-revisarse al sustituir los marcadores. También prueba el cambio de preferencia
-en vivo, la guarda de claro, el menú móvil y el modo oscuro sin JavaScript.
+revisarse al sustituir los marcadores. También prueba que la preferencia del
+sistema y `data-theme` no alteren el tema, el menú móvil y el sitio sin JavaScript.
 El CI existente incluye estas pruebas y sus artefactos `revision-sitio-*`.
 
 ```sh

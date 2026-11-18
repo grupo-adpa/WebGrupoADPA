@@ -110,8 +110,8 @@ PR 4: `/invue`, separado y con bandera apagada por defecto, solo después de abr
 
 La fuente es `gadpa-platform/main/docs/contenido-pagina-invue.md` (16/11/2026).
 `invue.html` usa la barra, el pie y el sistema v2 del PR 3. El brief prevalece
-sobre las capturas: héroe con velo marino, audiencia sobre bruma y soluciones
-con dos columnas en tableta y tres en escritorio. No incorpora fotos ni logo
+sobre las capturas: héroe con velo marino, audiencia sobre superficie-alta y
+soluciones con dos columnas en tableta y tres en escritorio. No incorpora fotos ni logo
 de InVue; los únicos logos son los provisionales autorizados de Grupo ADPA.
 
 `site.INVUE_ACTIVA` es `false` por defecto. Para revisión local, la variable de

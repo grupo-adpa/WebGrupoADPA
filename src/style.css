@@ -121,7 +121,13 @@
   @apply btn bg-marino text-white hover:bg-white hover:text-marino;
 }
 @utility btn-outline {
-  @apply btn border-[1.5px] border-current hover:bg-marino hover:text-white;
+  @apply btn border-[1.5px] border-current hover:bg-white hover:text-marino;
+}
+@layer utilities {
+  .bg-teal .btn-outline:hover {
+    background-color: var(--adpa-marino);
+    color: var(--adpa-blanco);
+  }
 }
 @utility dark-focus {
   @apply focus-visible:outline-white;

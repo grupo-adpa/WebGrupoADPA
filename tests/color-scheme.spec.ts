@@ -86,9 +86,18 @@ for (const width of [360, 1280]) {
       await page.screenshot({ path: testInfo.outputPath(`${name}-oscuro-${width}.png`), fullPage: true });
       // Verificar también estados interactivos: texto, fondo y foco.
       for (const button of await page.locator("main a.btn-outline, main a.btn-dark, main a.btn-primary, main a.hover\\:bg-teal-claro").all()) {
+        const outline = await button.evaluate((element) => element.classList.contains("btn-outline"));
+        const onTeal = outline && await button.evaluate((element) => Boolean(element.closest(".bg-teal")));
+        const backgroundBeforeHover = await button.evaluate((element) => getComputedStyle(element).backgroundColor);
         await button.focus();
         await expect(button).toHaveCSS("outline-width", "3px");
         await button.hover();
+        if (outline) {
+          const backgroundAfterHover = await button.evaluate((element) => getComputedStyle(element).backgroundColor);
+          expect(backgroundAfterHover).not.toBe(backgroundBeforeHover);
+          await expect(button).toHaveCSS("background-color", onTeal ? "rgb(9, 34, 57)" : "rgb(255, 255, 255)");
+          await expect(button).toHaveCSS("color", onTeal ? "rgb(255, 255, 255)" : "rgb(9, 34, 57)");
+        }
         expect((await textContrast(page)).failures).toEqual([]);
       }
     }

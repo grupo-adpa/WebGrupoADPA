@@ -41,9 +41,29 @@ for (const width of [360, 768, 1280]) {
       "href",
       "mailto:info@grupoadpa.com",
     );
+    await expect(page.locator("[data-rights]")).toHaveAttribute(
+      "href",
+      "mailto:info@grupoadpa.com",
+    );
+    await expect(page.getByText("Redes sociales:")).toHaveCount(0);
+    expect(
+      await page
+        .locator("h1")
+        .evaluate((el) => getComputedStyle(el).fontFamily),
+    ).toContain("Manrope");
+    for (const image of await page.locator("img").all())
+      expect(
+        await image.evaluate((el) => (el as HTMLImageElement).naturalWidth),
+      ).toBeGreaterThan(0);
     await page.screenshot({
       path: testInfo.outputPath(`portada-${width}.png`),
     });
+    for (const section of ["soporte", "proyectos", "contacto"]) {
+      await page
+        .locator(`#${section}`)
+        .screenshot({ path: testInfo.outputPath(`${section}-${width}.png`) });
+    }
+
     await page
       .locator("#construccion")
       .screenshot({ path: testInfo.outputPath(`servicios-${width}.png`) });
@@ -113,10 +133,9 @@ test("contactos y contenido funcionan sin JavaScript y sin recursos externos", a
     "unsafe-inline",
   );
   await expect(page.locator("h1")).toBeVisible();
-  await expect(page.locator(".hero [data-whatsapp]")).toHaveAttribute(
-    "href",
-    "https://wa.me/50433039319",
-  );
+  await expect(
+    page.locator('[aria-labelledby="hero-title"] [data-whatsapp]'),
+  ).toHaveAttribute("href", "https://wa.me/50433039319");
   await expect(page.locator("[data-email]")).toHaveAttribute(
     "href",
     "mailto:info@grupoadpa.com",
@@ -124,3 +143,49 @@ test("contactos y contenido funcionan sin JavaScript y sin recursos externos", a
   expect(remote).toEqual([]);
   await context.close();
 });
+
+test("todas las páginas de revisión impiden indexación", async ({
+  page,
+  request,
+}) => {
+  for (const path of [
+    "/",
+    "/privacidad.html",
+    "/terminos.html",
+    "/no-existe",
+  ]) {
+    await page.goto(path);
+    await expect(page.locator('meta[name="robots"]')).toHaveCount(1);
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      "noindex,nofollow",
+    );
+  }
+  expect(await (await request.get("/robots.txt")).text()).toBe(
+    "User-agent: *\nDisallow: /\n",
+  );
+});
+for (const width of [360, 768, 1280]) {
+  test(`mosaico sin celdas vacías a ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const filled = await page.locator("#construction-grid").evaluate((grid) => {
+      const cards = [...grid.children].map((el) => el.getBoundingClientRect());
+      const startsX = [...new Set(cards.map((r) => Math.round(r.left)))];
+      const startsY = [...new Set(cards.map((r) => Math.round(r.top)))];
+      return startsX.every((x) =>
+        startsY.every((y) =>
+          cards.some(
+            (r) =>
+              r.left <= x + 2 &&
+              r.right > x + 2 &&
+              r.top <= y + 2 &&
+              r.bottom > y + 2,
+          ),
+        ),
+      );
+    });
+    expect(filled).toBeTruthy();
+    await expect(page.locator("#proyectos h2")).toHaveText("Proyectos");
+  });
+}

@@ -2,6 +2,13 @@ services:
   web:
     build: .
     restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:uid=101,gid=101,mode=0755
+      - /var/run:uid=101,gid=101,mode=0755
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
     networks:
       - proxy
     # Sin puertos publicados. HTTPS/HSTS se configuran en el proxy.

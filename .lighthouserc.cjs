@@ -5,7 +5,11 @@ module.exports = {
       startServerCommand: "node scripts/serve-dist.mjs",
       startServerReadyPattern: "READY",
       numberOfRuns: 3,
-      settings: { chromeFlags: "--headless --no-sandbox" },
+      settings: {
+        chromeFlags: "--headless --no-sandbox",
+        // En revisión se exige noindex; se verifica explícitamente con Playwright.
+        skipAudits: process.env.PUBLICAR === "true" ? [] : ["is-crawlable"],
+      },
     },
     assert: {
       assertions: {

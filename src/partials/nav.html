@@ -1,0 +1,62 @@
+<a
+  class="absolute -top-24 left-4 z-50 rounded-xl bg-white p-4 text-marino focus:top-4"
+  href="#contenido"
+  >Saltar al contenido</a
+>
+<header class="relative z-10 shell">
+  <nav
+    class="flex min-h-[100px] items-center justify-between gap-6"
+    aria-label="Principal"
+  >
+    <a href="/" class="inline-flex shrink-0 p-3" aria-label="Grupo ADPA, inicio"
+      ><img
+        src="/brand/negativo-104.webp"
+        srcset="/brand/negativo-104.webp 1x, /brand/negativo-208.webp 2x"
+        width="52"
+        height="52"
+        class="size-[52px] object-contain"
+        alt=""
+    /></a>
+    <div class="hidden items-center gap-8 text-[15px] font-medium lg:flex">
+      <a class="dark-focus hover:underline" href="/#construccion">Servicios</a
+      ><a class="dark-focus hover:underline" href="/#proyectos">Proyectos</a
+      ><a class="dark-focus hover:underline" href="/#soporte">Soporte técnico</a
+      ><a class="btn bg-white text-marino dark-focus" href="/#contacto"
+        >Contacto</a
+      >
+    </div>
+    <button
+      class="btn border border-white/50 dark-focus lg:hidden"
+      id="open-menu"
+      type="button"
+      aria-label="Abrir menú"
+      aria-controls="mobile-menu"
+      aria-expanded="false"
+    >
+      <i data-lucide="menu" aria-hidden="true"></i>
+    </button>
+  </nav>
+</header>
+<dialog
+  id="mobile-menu"
+  class="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none border-0 bg-marino p-6 text-white"
+  aria-label="Menú principal"
+>
+  <div class="flex items-center justify-between">
+    <span class="font-heading text-xl font-bold">Grupo ADPA</span
+    ><button
+      id="close-menu"
+      class="btn border border-white/50 dark-focus"
+      type="button"
+      aria-label="Cerrar menú"
+    >
+      <i data-lucide="x" aria-hidden="true"></i>
+    </button>
+  </div>
+  <nav class="mt-12 flex flex-col gap-6" aria-label="Navegación móvil">
+    <a class="min-h-11 text-xl dark-focus" href="/#construccion">Servicios</a
+    ><a class="min-h-11 text-xl dark-focus" href="/#proyectos">Proyectos</a
+    ><a class="min-h-11 text-xl dark-focus" href="/#soporte">Soporte técnico</a
+    ><a class="min-h-11 text-xl dark-focus" href="/#contacto">Contacto</a>
+  </nav>
+</dialog>

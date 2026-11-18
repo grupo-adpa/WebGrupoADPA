@@ -1,0 +1,5 @@
+# Solo para pruebas en el runner; la red se crea y elimina en ese job.
+services:
+  web:
+    ports:
+      - 127.0.0.1:8080:8080

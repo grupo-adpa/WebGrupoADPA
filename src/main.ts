@@ -31,7 +31,7 @@ createIcons({
     Menu,
     X,
   },
-  attrs: { "aria-hidden": "true", "stroke-width": 1.5 },
+  attrs: { "aria-hidden": "true", "stroke-width": 1.8 },
 });
 for (const link of document.querySelectorAll<HTMLAnchorElement>(
   "[data-whatsapp]",
@@ -62,7 +62,7 @@ document
 // Mantener Tab y Shift+Tab dentro del menú, incluido el salto al navegador.
 dialog?.addEventListener("keydown", (event) => {
   if (event.key !== "Tab") return;
-  const items = dialog.querySelectorAll<HTMLElement>('button, a[href]');
+  const items = dialog.querySelectorAll<HTMLElement>("button, a[href]");
   const first = items[0];
   const last = items[items.length - 1];
   if (event.shiftKey && document.activeElement === first) {
@@ -82,3 +82,8 @@ for (const link of dialog?.querySelectorAll("a") ?? [])
 window.matchMedia("(min-width: 1000px)").addEventListener("change", (event) => {
   if (event.matches) dialog?.close();
 });
+
+for (const link of document.querySelectorAll<HTMLAnchorElement>(
+  "[data-rights]",
+))
+  link.href = `mailto:${site.rightsEmail}`;

@@ -137,6 +137,9 @@ npm run test:invue-build
 CI prueba las dos variantes con Playwright/axe, Lighthouse y el Nginx real en
 Compose. El argumento Docker `INVUE_ACTIVA` también es `false` por defecto;
 CI lo pasa al construir la imagen y verifica HTTP 200/404 en ambas rutas.
+Con InVue activa comprueba también la CSP de `/invue` mediante `curl -sI`.
+`PUBLICAR` se aplica a InVue: noindex en revisión y bloqueo de publicación
+con sus siete fotos y tres datos pendientes.
 Los artefactos `revision-sitio-true` y `revision-sitio-false` incluyen los
 informes y las capturas a 360, 768 y 1280 px. No hay pasos de despliegue.
 

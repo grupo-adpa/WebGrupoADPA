@@ -62,6 +62,9 @@ jobs:
           curl --retry 10 --retry-all-errors --retry-delay 1 --retry-max-time 30 --max-time 5 --fail http://127.0.0.1:8080/ -o /dev/null
           test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/no-existe)" = 404
           curl -sI http://127.0.0.1:8080/ | grep -i "content-security-policy: default-src 'none'"
+          if [ "$INVUE_ACTIVA" = true ]; then
+            curl -sI http://127.0.0.1:8080/invue | grep -i "content-security-policy: default-src 'none'"
+          fi
           expected=404
           if [ "$INVUE_ACTIVA" = true ]; then expected=200; fi
           test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/invue)" = "$expected"

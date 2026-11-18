@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { site } from "../src/config";
 const active = process.env.INVUE_ACTIVA === "true";
 const whatsapp =
   "https://wa.me/50433039319?text=" +
@@ -157,6 +158,12 @@ test.describe("InVue activa", () => {
     const page = await context.newPage();
     await page.goto("/invue");
     await expect(page.locator("h1")).toBeVisible();
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content", "noindex,nofollow",
+    );
+    await expect(
+      page.getByRole("link", { name: `WhatsApp +${site.whatsapp.general}` }),
+    ).toHaveAttribute("href", whatsapp);
     await expect(
       page.getByRole("link", { name: "Solicita una asesoría" }),
     ).toHaveAttribute("href", whatsapp);

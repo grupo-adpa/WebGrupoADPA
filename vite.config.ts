@@ -5,9 +5,9 @@ import {
   publicationFlag,
   checkPublication,
 } from "./scripts/check-publication.mjs";
+import { site, whatsappUrl, emailUrl } from "./src/config.ts";
 const publicar = publicationFlag();
 let isBuild = false;
-import { site, whatsappUrl, emailUrl } from "./src/config.ts";
 const flag = process.env.INVUE_ACTIVA;
 if (flag !== undefined && flag !== "true" && flag !== "false") {
   throw new Error("INVUE_ACTIVA debe ser true o false");
@@ -73,6 +73,7 @@ export default defineConfig({
             ? '<a class="dark-focus flex items-center justify-between gap-4 rounded-3xl border border-white/20 bg-white/[.06] p-6 font-heading text-xl font-bold lg:col-span-2" href="/invue">Soluciones para comercios · InVue<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>'
             : "",
           WA_GENERAL: whatsappUrl("general")!,
+          WA_GENERAL_VISIBLE: `+${site.whatsapp.general}`,
           WA_INVUE: whatsappUrl("general", "invue")!,
           EMAIL_INVUE: emailUrl("invue"),
           SITE_URL: site.url,

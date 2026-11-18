@@ -16,6 +16,16 @@
     format("woff2");
 }
 :root {
+  color-scheme: light;
+  /* design.md §2.1, gadpa-platform PR #45, 5434186. */
+  --adpa-fondo: #f4f7f9;
+  --adpa-superficie: #ffffff;
+  --adpa-superficie-alta: #e3eef2;
+  --adpa-texto: #092239;
+  --adpa-texto-secundario: #4a5a68;
+  --adpa-acento-texto: #236b7b;
+  --adpa-boton: #4197ac;
+  --adpa-borde: #c9d8e2;
   /* Reservado exclusivamente a los marcadores de foto. */
   --adpa-marcador-foto: #1c3b53;
   --adpa-marino: #092239;
@@ -36,7 +46,29 @@
   --fuente-titulos: "Manrope Variable", Manrope, system-ui, sans-serif;
   --fuente-texto: "Inter Variable", Inter, system-ui, sans-serif;
 }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --adpa-fondo: #092239;
+    --adpa-superficie: #12304c;
+    --adpa-superficie-alta: #0c2a42;
+    --adpa-texto: #ffffff;
+    --adpa-texto-secundario: #c9d8e2;
+    --adpa-acento-texto: #9ad3e0;
+    --adpa-boton: #4197ac;
+    --adpa-borde: rgb(255 255 255 / 0.14);
+  }
+}
 @theme inline {
+  --color-fondo: var(--adpa-fondo);
+  --color-superficie: var(--adpa-superficie);
+  --color-superficie-alta: var(--adpa-superficie-alta);
+  --color-texto: var(--adpa-texto);
+  --color-secundario: var(--adpa-texto-secundario);
+  --color-acento: var(--adpa-acento-texto);
+  --color-boton: var(--adpa-boton);
+  --color-suave: var(--adpa-borde);
+  --color-white: var(--adpa-blanco);
   --color-texto-claro: var(--adpa-texto-claro);
   --color-marino: var(--adpa-marino);
   --color-teal: var(--adpa-teal);
@@ -51,7 +83,7 @@
 }
 @layer base {
   body {
-    @apply m-0 bg-lienzo text-marino font-sans text-base leading-relaxed;
+    @apply m-0 bg-fondo text-texto font-sans text-base leading-relaxed;
     font-synthesis: none;
   }
   h1,
@@ -61,7 +93,7 @@
   }
   a,
   button {
-    @apply focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-teal-texto;
+    @apply focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-texto;
   }
   button {
     @apply cursor-pointer;
@@ -104,7 +136,7 @@
   @apply inline-flex min-h-[52px] items-center justify-center gap-3 rounded-full px-6 py-3 text-base font-semibold leading-snug;
 }
 @utility btn-primary {
-  @apply btn bg-teal text-marino hover:bg-white;
+  @apply btn bg-boton text-marino hover:bg-white;
 }
 @utility btn-dark {
   @apply btn bg-marino text-white hover:bg-white hover:text-marino;

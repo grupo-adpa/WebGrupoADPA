@@ -1,4 +1,5 @@
 import "./style.css";
+import { initSignatureBackground } from "./signature-background";
 import {
   Smartphone,
   Laptop,
@@ -24,6 +25,7 @@ import {
 } from "lucide";
 import { site, whatsappUrl, emailUrl } from "./config";
 
+initSignatureBackground();
 createIcons({
   icons: {
     Smartphone,

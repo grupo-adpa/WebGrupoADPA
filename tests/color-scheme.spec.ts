@@ -35,7 +35,8 @@ async function textContrast(page: Page) {
       if (!el || !node.textContent?.trim() || !el.checkVisibility()) continue;
       const range = document.createRange();
       range.selectNodeContents(node);
-      if (!range.getBoundingClientRect().width) continue;
+      const bounds = range.getBoundingClientRect();
+      if (!bounds.width) continue;
       const style = getComputedStyle(el);
       const chain: Element[] = [];
       for (let ancestor: Element | null = el; ancestor; ancestor = ancestor.parentElement)
@@ -46,6 +47,15 @@ async function textContrast(page: Page) {
       if (header && hero && getComputedStyle(header.parentElement!).position === "absolute")
         chain.splice(chain.indexOf(document.body) + 1, 0, hero);
       let background = rgba(getComputedStyle(document.body).backgroundColor);
+      const signature = document.querySelector<HTMLCanvasElement>(".signature-background");
+      const signatureContext = signature?.getContext("2d");
+      if (signature && signatureContext) {
+        const x = Math.max(0, Math.min(signature.width - 1,
+          Math.round((bounds.left + bounds.width / 2) * signature.width / innerWidth)));
+        const y = Math.max(0, Math.min(signature.height - 1,
+          Math.round((bounds.top + bounds.height / 2) * signature.height / innerHeight)));
+        background = [...over([...signatureContext.getImageData(x, y, 1, 1).data], background), 255];
+      }
       for (const ancestor of chain)
         background = [...over(rgba(getComputedStyle(ancestor).backgroundColor), background), 255];
       const foreground = over(rgba(style.color), background);
@@ -75,6 +85,7 @@ for (const width of [360, 1280]) {
       expect(response?.headers()["content-security-policy"]).not.toContain("unsafe-inline");
       await page.evaluate(() => document.fonts.ready);
       await expect(page.locator("body")).toHaveCSS("background-color", "rgb(9, 34, 57)");
+      await expect(page.locator(".signature-background")).toBeVisible();
       expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
       const report = await textContrast(page);
       expect(report.checked).toBeGreaterThan(10);

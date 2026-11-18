@@ -16,26 +16,22 @@
     format("woff2");
 }
 :root {
-  color-scheme: light;
-  /* design.md §2.1, gadpa-platform PR #45, 5434186. */
-  --adpa-fondo: #f4f7f9;
-  --adpa-superficie: #ffffff;
-  --adpa-superficie-alta: #e3eef2;
-  --adpa-texto: #092239;
-  --adpa-texto-secundario: #4a5a68;
-  --adpa-acento-texto: #236b7b;
+  color-scheme: dark;
+  /* design.md §2.1, gadpa-platform main, 215e63c. */
+  --adpa-fondo: #092239;
+  --adpa-superficie: #12304c;
+  --adpa-superficie-alta: #0c2a42;
+  --adpa-texto: #ffffff;
+  --adpa-texto-secundario: #c9d8e2;
+  --adpa-acento-texto: #9ad3e0;
   --adpa-boton: #4197ac;
-  --adpa-borde: #c9d8e2;
+  --adpa-borde: rgb(255 255 255 / 0.14);
   /* Reservado exclusivamente a los marcadores de foto. */
   --adpa-marcador-foto: #1c3b53;
   --adpa-marino: #092239;
   --adpa-teal: #4197ac;
-  --adpa-teal-texto: #236b7b;
   --adpa-teal-claro: #9ad3e0;
   --adpa-nube: #c9d8e2;
-  --adpa-gris: #4a5a68;
-  --adpa-lienzo: #f4f7f9;
-  --adpa-bruma: #e3eef2;
   --adpa-blanco: #fff;
   --adpa-texto-claro: #dce9ef;
   --adpa-rayado: rgb(255 255 255 / 0.05);
@@ -45,19 +41,6 @@
   --adpa-velo: rgb(9 34 57 / 0.78);
   --fuente-titulos: "Manrope Variable", Manrope, system-ui, sans-serif;
   --fuente-texto: "Inter Variable", Inter, system-ui, sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --adpa-fondo: #092239;
-    --adpa-superficie: #12304c;
-    --adpa-superficie-alta: #0c2a42;
-    --adpa-texto: #ffffff;
-    --adpa-texto-secundario: #c9d8e2;
-    --adpa-acento-texto: #9ad3e0;
-    --adpa-boton: #4197ac;
-    --adpa-borde: rgb(255 255 255 / 0.14);
-  }
 }
 @theme inline {
   --color-fondo: var(--adpa-fondo);
@@ -72,12 +55,8 @@
   --color-texto-claro: var(--adpa-texto-claro);
   --color-marino: var(--adpa-marino);
   --color-teal: var(--adpa-teal);
-  --color-teal-texto: var(--adpa-teal-texto);
   --color-teal-claro: var(--adpa-teal-claro);
   --color-nube: var(--adpa-nube);
-  --color-gris: var(--adpa-gris);
-  --color-lienzo: var(--adpa-lienzo);
-  --color-bruma: var(--adpa-bruma);
   --font-heading: var(--fuente-titulos);
   --font-sans: var(--fuente-texto);
 }
@@ -142,7 +121,13 @@
   @apply btn bg-marino text-white hover:bg-white hover:text-marino;
 }
 @utility btn-outline {
-  @apply btn border-[1.5px] border-current hover:bg-marino hover:text-white;
+  @apply btn border-[1.5px] border-current hover:bg-white hover:text-marino;
+}
+@layer utilities {
+  .bg-teal .btn-outline:hover {
+    background-color: var(--adpa-marino);
+    color: var(--adpa-blanco);
+  }
 }
 @utility dark-focus {
   @apply focus-visible:outline-white;

@@ -67,59 +67,67 @@ async function textContrast(page: Page) {
 const pages = ["/", "/privacidad.html", "/terminos.html", "/no-existe",
   ...(process.env.INVUE_ACTIVA === "true" ? ["/invue"] : [])];
 
-for (const colorScheme of ["light", "dark"] as const) {
-  for (const width of [360, 1280]) {
-    test(`${colorScheme}: contraste, axe y capturas a ${width}px`, async ({ page }, testInfo) => {
-      await page.emulateMedia({ colorScheme });
-      await page.setViewportSize({ width, height: 900 });
-      for (const path of pages) {
-        const response = await page.goto(path);
-        expect(response?.headers()["content-security-policy"]).not.toContain("unsafe-inline");
-        await page.evaluate(() => document.fonts.ready);
-        await expect(page.locator("body")).toHaveCSS("background-color",
-          colorScheme === "dark" ? "rgb(9, 34, 57)" : "rgb(244, 247, 249)");
-        expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
-        const report = await textContrast(page);
-        expect(report.checked).toBeGreaterThan(10);
-        expect(report.failures).toEqual([]);
-        const name = path === "/" ? "portada" : path.replace(/\W/g, "-");
-        const reportPath = testInfo.outputPath(`${name}-${colorScheme}-${width}-contraste.json`);
-        await writeFile(reportPath, JSON.stringify(report, null, 2));
-        await testInfo.attach(`${name}-contraste`, { path: reportPath, contentType: "application/json" });
-        await page.screenshot({ path: testInfo.outputPath(`${name}-${colorScheme}-${width}.png`), fullPage: true });
-        // Verificar también estados interactivos: texto, fondo y foco.
-        for (const button of await page.locator("main a.btn-outline, main a.btn-dark, main a.btn-primary, main a.hover\\:bg-teal-claro").all()) {
-          await button.focus();
-          await expect(button).toHaveCSS("outline-width", "3px");
-          await button.hover();
-          expect((await textContrast(page)).failures).toEqual([]);
+for (const width of [360, 1280]) {
+  test(`tema oscuro: contraste, axe y capturas a ${width}px`, async ({ page }, testInfo) => {
+    await page.setViewportSize({ width, height: 900 });
+    for (const path of pages) {
+      const response = await page.goto(path);
+      expect(response?.headers()["content-security-policy"]).not.toContain("unsafe-inline");
+      await page.evaluate(() => document.fonts.ready);
+      await expect(page.locator("body")).toHaveCSS("background-color", "rgb(9, 34, 57)");
+      expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze()).violations).toEqual([]);
+      const report = await textContrast(page);
+      expect(report.checked).toBeGreaterThan(10);
+      expect(report.failures).toEqual([]);
+      const name = path === "/" ? "portada" : path.replace(/\W/g, "-");
+      const reportPath = testInfo.outputPath(`${name}-oscuro-${width}-contraste.json`);
+      await writeFile(reportPath, JSON.stringify(report, null, 2));
+      await testInfo.attach(`${name}-contraste`, { path: reportPath, contentType: "application/json" });
+      await page.screenshot({ path: testInfo.outputPath(`${name}-oscuro-${width}.png`), fullPage: true });
+      // Verificar también estados interactivos: texto, fondo y foco.
+      for (const button of await page.locator("main a.btn-outline, main a.btn-dark, main a.btn-primary, main a.hover\\:bg-teal-claro").all()) {
+        const outline = await button.evaluate((element) => element.classList.contains("btn-outline"));
+        const onTeal = outline && await button.evaluate((element) => Boolean(element.closest(".bg-teal")));
+        const backgroundBeforeHover = await button.evaluate((element) => getComputedStyle(element).backgroundColor);
+        await button.focus();
+        await expect(button).toHaveCSS("outline-width", "3px");
+        await button.hover();
+        if (outline) {
+          const backgroundAfterHover = await button.evaluate((element) => getComputedStyle(element).backgroundColor);
+          expect(backgroundAfterHover).not.toBe(backgroundBeforeHover);
+          await expect(button).toHaveCSS("background-color", onTeal ? "rgb(9, 34, 57)" : "rgb(255, 255, 255)");
+          await expect(button).toHaveCSS("color", onTeal ? "rgb(255, 255, 255)" : "rgb(9, 34, 57)");
         }
+        expect((await textContrast(page)).failures).toEqual([]);
       }
-      if (width === 360) {
-        await page.goto("/");
-        await page.getByRole("button", { name: "Abrir menú" }).click();
-        expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations).toEqual([]);
-        await page.getByRole("button", { name: "Cerrar menú" }).press("Escape");
-        await expect(page.getByRole("button", { name: "Abrir menú" })).toBeFocused();
-      }
-    });
-  }
+    }
+    if (width === 360) {
+      await page.goto("/");
+      await page.getByRole("button", { name: "Abrir menú" }).click();
+      expect((await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa"]).analyze()).violations).toEqual([]);
+      await page.getByRole("button", { name: "Cerrar menú" }).press("Escape");
+      await expect(page.getByRole("button", { name: "Abrir menú" })).toBeFocused();
+    }
+  });
 }
 
-test("cambio del sistema y guarda explícita light, sin almacenamiento", async ({ page }) => {
+test("la preferencia del sistema y data-theme no crean una variante clara", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/");
-  await expect(page.locator("body")).toHaveCSS("color", "rgb(9, 34, 57)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(9, 34, 57)");
+  await expect(page.locator("body")).toHaveCSS("color", "rgb(255, 255, 255)");
   await page.emulateMedia({ colorScheme: "dark" });
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(9, 34, 57)");
   await expect(page.locator("body")).toHaveCSS("color", "rgb(255, 255, 255)");
   await page.evaluate(() => document.documentElement.setAttribute("data-theme", "light"));
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(244, 247, 249)");
-  await expect(page.locator("body")).toHaveCSS("color", "rgb(9, 34, 57)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(9, 34, 57)");
+  await expect(page.locator("body")).toHaveCSS("color", "rgb(255, 255, 255)");
+  await expect(page.locator("html")).toHaveCSS("color-scheme", "dark");
   expect(await page.evaluate(() => [localStorage.length, sessionStorage.length])).toEqual([0, 0]);
 });
 
-test("modo noche funciona sin JavaScript", async ({ browser }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false, colorScheme: "dark" });
+test("el tema oscuro funciona sin JavaScript", async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false, colorScheme: "light" });
   const page = await context.newPage();
   await page.goto("/");
   await expect(page.locator("body")).toHaveCSS("color", "rgb(255, 255, 255)");

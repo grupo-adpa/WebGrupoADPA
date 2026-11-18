@@ -150,8 +150,8 @@ El formulario y cualquier cambio del contrato `leads` quedan fuera de este PR.
 
 ## Modo noche automático
 
-Implementa `docs/design.md` §2.1 de [gadpa-platform PR #45](https://github.com/grupo-adpa/gadpa-platform/pull/45),
-commit `54341868252614503a514e396987c63b245bb85e` (especificación aún en PR al implementarla).
+Especificación en gadpa-platform main, commit `fbc01b8`,
+[PR #45 integrado](https://github.com/grupo-adpa/gadpa-platform/pull/45), `docs/design.md` §2.1.
 Los ocho tokens semánticos se declaran en `:root`; `prefers-color-scheme: dark`
 los redefine bajo `:root:not([data-theme="light"])`. No hay selector, script,
 almacenamiento ni dependencia nueva. La guarda permite conservar claro cuando

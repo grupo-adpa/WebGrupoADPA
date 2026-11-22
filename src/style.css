@@ -25,6 +25,8 @@
   --adpa-texto-secundario: #c9d8e2;
   --adpa-acento-texto: #9ad3e0;
   --adpa-boton: #4197ac;
+  /* CTA principal: lima que resalta sobre marino. Texto marino (contraste 12.7:1). */
+  --adpa-cta: #c7f464;
   --adpa-borde: rgb(255 255 255 / 0.14);
   /* Reservado exclusivamente a los marcadores de foto. */
   --adpa-marcador-foto: #1c3b53;
@@ -50,6 +52,7 @@
   --color-secundario: var(--adpa-texto-secundario);
   --color-acento: var(--adpa-acento-texto);
   --color-boton: var(--adpa-boton);
+  --color-cta: var(--adpa-cta);
   --color-suave: var(--adpa-borde);
   --color-white: var(--adpa-blanco);
   --color-texto-claro: var(--adpa-texto-claro);
@@ -128,7 +131,7 @@
   @apply inline-flex min-h-[52px] items-center justify-center gap-3 rounded-full px-6 py-3 text-base font-semibold leading-snug;
 }
 @utility btn-primary {
-  @apply btn bg-boton text-marino hover:bg-white;
+  @apply btn border-2 border-cta bg-cta text-marino hover:border-white hover:bg-white;
 }
 @utility btn-dark {
   @apply btn bg-marino text-white hover:bg-white hover:text-marino;

@@ -36,7 +36,10 @@ for (const width of [360, 768, 1280]) {
       page.getByRole("link", { name: "Términos de uso" }),
     ).toHaveCount(0);
     for (const link of await page.locator("[data-whatsapp]").all())
-      await expect(link).toHaveAttribute("href", "https://wa.me/50433039319");
+      await expect(link).toHaveAttribute(
+        "href",
+        /^https:\/\/wa\.me\/50433039319(\?text=|$)/,
+      );
     await expect(page.locator("[data-email]")).toHaveAttribute(
       "href",
       "mailto:info@grupoadpa.com",
@@ -58,7 +61,7 @@ for (const width of [360, 768, 1280]) {
     await page.screenshot({
       path: testInfo.outputPath(`portada-${width}.png`),
     });
-    for (const section of ["soporte", "proyectos", "contacto"]) {
+    for (const section of ["soporte", "trabajos", "contacto"]) {
       await page
         .locator(`#${section}`)
         .screenshot({ path: testInfo.outputPath(`${section}-${width}.png`) });
@@ -135,7 +138,7 @@ test("contactos y contenido funcionan sin JavaScript y sin recursos externos", a
   await expect(page.locator("h1")).toBeVisible();
   await expect(
     page.locator('[aria-labelledby="hero-title"] [data-whatsapp]'),
-  ).toHaveAttribute("href", "https://wa.me/50433039319");
+  ).toHaveAttribute("href", /^https:\/\/wa\.me\/50433039319(\?text=|$)/);
   await expect(page.locator("[data-email]")).toHaveAttribute(
     "href",
     "mailto:info@grupoadpa.com",
@@ -186,6 +189,8 @@ for (const width of [360, 768, 1280]) {
       );
     });
     expect(filled).toBeTruthy();
-    await expect(page.locator("#proyectos h2")).toHaveText("Proyectos");
+    await expect(page.locator("#trabajos h2")).toHaveText(
+      "Algunos trabajos de Grupo ADPA",
+    );
   });
 }

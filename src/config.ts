@@ -5,7 +5,8 @@ export const site = {
   whatsapp: { general: "50433039319", shipx: "", yatta: "" },
   // El mensaje de InVue está aprobado en contenido-pagina-invue.md.
   messages: {
-    general: "",
+    general:
+      "Gracias por contactar a Grupo ADPA. Dinos en qué servicio estás interesado y pronto te responderemos tu pregunta.",
     shipx: "",
     yatta: "",
     invue: "Hola, quiero información sobre las soluciones InVue para mi tienda",
@@ -13,7 +14,10 @@ export const site = {
   emailSubjects: { invue: "Soluciones InVue" },
   INVUE_ACTIVA: false,
   rightsEmail: "info@grupoadpa.com",
-  legal: { privacyVersion: "[PENDIENTE]", termsVersion: "[PENDIENTE]" },
+  legal: {
+    privacyVersion: "2026-11-adpa",
+    termsVersion: "2026-11-adpa-terminos",
+  },
   FORMULARIO_ACTIVO: false,
   TERMINOS_ACTIVOS: false,
 } as const;

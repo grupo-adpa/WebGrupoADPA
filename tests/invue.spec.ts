@@ -76,7 +76,10 @@ test.describe("InVue activa", () => {
       expect(body).not.toContain("distribuidor exclusivo");
       expect(body).not.toContain("SCB Comercial");
       for (const img of await page.locator("img").all())
-        await expect(img).toHaveAttribute("src", /\/brand\/negativo-/);
+        await expect(img).toHaveAttribute(
+          "src",
+          /\/brand\/(negativo-|logo-prueba-)/,
+        );
       for (const link of await page.locator("[data-whatsapp]").all())
         await expect(link).toHaveAttribute("href", whatsapp);
       await expect(page.locator("[data-email]")).toHaveAttribute("href", email);

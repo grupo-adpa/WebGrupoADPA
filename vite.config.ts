@@ -64,10 +64,10 @@ export default defineConfig({
           );
         const values: Record<string, string> = {
           INVUE_NAV_DESKTOP: invueActiva
-            ? '<a class="dark-focus text-teal-claro hover:underline" href="/invue">Para comercios</a>'
+            ? '<a class="dark-focus font-bold tracking-tight text-white hover:underline" href="/invue" aria-label="InVue, soluciones para comercios">InVue</a>'
             : "",
           INVUE_NAV_MOBILE: invueActiva
-            ? '<a class="min-h-11 text-xl dark-focus text-teal-claro" href="/invue">Para comercios</a>'
+            ? '<a class="min-h-11 text-xl font-bold dark-focus text-white" href="/invue" aria-label="InVue, soluciones para comercios">InVue</a>'
             : "",
           INVUE_CARD: invueActiva
             ? '<a class="dark-focus flex items-center justify-between gap-4 rounded-3xl border border-white/20 bg-white/[.06] p-6 font-heading text-xl font-bold lg:col-span-2" href="/invue">Soluciones para comercios · InVue<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>'
